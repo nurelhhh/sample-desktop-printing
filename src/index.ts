@@ -1,11 +1,9 @@
 // Modules to control application life and create native browser window
-import { app, BrowserWindow, BrowserView, ipcMain, shell, dialog, Tray, Menu, autoUpdater, PrinterInfo, webContents, screen } from 'electron';
+import { app, BrowserWindow, BrowserView, ipcMain, shell, dialog, Tray, Menu, autoUpdater, screen } from 'electron';
 import path from 'path';
-import { print, getPrinters, getDefaultPrinter, PrintOptions } from 'pdf-to-printer';
+import { print, PrintOptions } from 'pdf-to-printer';
 import * as fs from 'fs';
 import { Buffer } from 'node:buffer';
-import axios from 'axios';
-import * as os from 'os'
 import log from 'electron-log';
 import { promisify } from 'util'
 import { v4 as uuidv4 } from 'uuid';
@@ -13,9 +11,6 @@ import { v4 as uuidv4 } from 'uuid';
 const appFolder = path.dirname(process.execPath)
 const updateExe = path.resolve(appFolder, '..', 'Update.exe')
 const exeName = path.basename(process.execPath)
-
-// const tlsUrl = 'http://localhost:31776';
-// const tlsUrl = 'http://10.85.72.36:3004';
 
 const writeFileAsync = promisify(fs.writeFile)
 const unlinkAsync = promisify(fs.unlink)
@@ -89,8 +84,6 @@ let failedFrameNumbers: string[] = []
 let successPrintFiles: string[] = []
 let framenumberPrintQueue: string[] = []
 let successFramenumbers: string[] = []
-
-let tlsCookiesValues = "";
 
 let fileSuccessfullyPrintedList: string[] = []
 let fileFailedToPrintedList: string[] = []
@@ -298,11 +291,6 @@ async function createWindow(): Promise<void> {
 async function getFrameNumberFiles(frameNumber: string): Promise<{ isSuccess: boolean, docs: DocumentAFI[], errorMessage?: string }> {
   var listOfBase64: DocumentAFI[] = [];
   let base64 = "JVBERi0xLjIgCjkgMCBvYmoKPDwKPj4Kc3RyZWFtCkJULyAzMiBUZiggIFlPVVIgVEVYVCBIRVJFICAgKScgRVQKZW5kc3RyZWFtCmVuZG9iago0IDAgb2JqCjw8Ci9UeXBlIC9QYWdlCi9QYXJlbnQgNSAwIFIKL0NvbnRlbnRzIDkgMCBSCj4+CmVuZG9iago1IDAgb2JqCjw8Ci9LaWRzIFs0IDAgUiBdCi9Db3VudCAxCi9UeXBlIC9QYWdlcwovTWVkaWFCb3ggWyAwIDAgMjUwIDUwIF0KPj4KZW5kb2JqCjMgMCBvYmoKPDwKL1BhZ2VzIDUgMCBSCi9UeXBlIC9DYXRhbG9nCj4+CmVuZG9iagp0cmFpbGVyCjw8Ci9Sb290IDMgMCBSCj4+CiUlRU9G";
-  listOfBase64.push({
-    base64: base64,
-    blobId: 'blobIdExample',
-    documentType: 'documentTypeExample'
-  })
   listOfBase64.push({
     base64: base64,
     blobId: 'blobIdExample',
