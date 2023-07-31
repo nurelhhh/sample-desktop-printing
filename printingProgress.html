@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample Desktop Printing App</title>
+
+    <style>
+        .text-center {
+            text-align: center;
+        }
+
+        .auth-logo {
+            width: 120px;
+            height: 120px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="text-center">
+        <img src="./assets/icon.png" class="auth-logo">
+    </div>
+
+    <h1>Printing Progress</h1>
+    <h2>Currently printing framenumber '<span id="progress"></span>'</h2>
+    <hr>
+    <div>
+        <h3>Total framenumbers will be printed: <span id="framenumbersTotal"></span></h3>
+        <ol id="framenumbersTotalList"></ol>
+    </div>
+    <div>
+        <h3>Total files has been printed: <span id="filesPrintedTotal"></span></h3>
+        <ol id="filesPrintedTotalList"></ol>
+    </div>
+    <div>
+        <h3>Total files failed to be printed: <span id="filesFailedPrintTotal"></span></h3>
+        <ol id="filesFailedPrintTotalList"></ol>
+    </div>
+    <br>
+    <script src="dist/renderer/main.js" defer></script>
+    <script>
+        window.printingapi.printingProgressReceive('from-printing-progress', (data) => {
+            window.document.getElementById('progress').innerHTML = data
+        })
+
+        window.printingapi.framenumbersTotalReceive('from-framenumbers-total', (data) => {
+            let innerHtmlString = ''
+            data.data.forEach(file => {
+                innerHtmlString += `<li>${file}</li>`
+            })
+            window.document.getElementById('framenumbersTotalList').innerHTML = innerHtmlString
+            window.document.getElementById('framenumbersTotal').innerHTML = data.total
+        })
+
+        window.printingapi.filesPrintedReceive('from-files-printed', (data) => {
+            let innerHtmlString = ''
+            data.data.forEach(file => {
+                innerHtmlString += `<li>${file}</li>`
+            })
+            window.document.getElementById('filesPrintedTotalList').innerHTML = innerHtmlString
+            window.document.getElementById('filesPrintedTotal').innerHTML = data.total
+        })
+
+        window.printingapi.filesFailedPrintReceive('from-files-failed-print', (data) => {
+            let innerHtmlString = ''
+            data.data.forEach(file => {
+                innerHtmlString += `<li>${file}</li>`
+            })
+            window.document.getElementById('filesFailedPrintTotalList').innerHTML = innerHtmlString
+            window.document.getElementById('filesFailedPrintTotal').innerHTML = data.total
+        })
+
+    </script>
+</body>
+
+</html>

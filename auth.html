@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sample Desktop Printing App</title>
+
+    <style>
+        body {
+            padding: 8px;
+        }
+
+        .text-center {
+            text-align: center;
+        }
+
+        .auth-logo {
+            width: 120px;
+            height: 120px;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="text-center">
+
+        <div class="text-center">
+            <img src="./assets/icon.png" class="auth-logo">
+        </div>
+
+        <h1>Printing App</h1>
+
+        <div id="connect-false">
+            <p>Please Connect first before using Desktop Print App</p>
+            <button id="loginBtn">Login</button>
+        </div>
+
+        <div id="connect-true">
+            <h2>Connected</h2>
+            <p>Please use TLS AFI Print to request Printing</p>
+        </div>
+
+        <div id="refresh-auth-status-container">
+            <p>Already login?</p>
+            <button id="refreshAuthStatusBtn">Refresh</button>
+        </div>
+
+        <br>
+    </div>
+
+    <script src="dist/renderer/main.js" defer></script>
+    <script>
+        // const { ipcRenderer } = require("electron")
+
+        window.document.getElementById('connect-true').style.display = 'none'
+        window.document.getElementById('connect-false').style.display = 'none'
+
+        window.document.getElementById('loginBtn').onclick = () => {
+            window.open('http://localhost:31776', '_blank')
+        }
+
+        window.document.getElementById('refreshAuthStatusBtn').onclick = () => {
+            console.log('refreshAuthStatusBtn clicked')
+
+            // Send a message to the main process
+            window.authapi.refreshSend("to-auth-refresh", "some data");
+
+        }
+
+        // Called when message received from main process
+        window.authapi.checkReceive("from-auth-check", (data) => {
+            if (data) {
+                window.document.getElementById('connect-false').style.display = 'none'
+                window.document.getElementById('connect-true').style.display = 'block'
+                window.document.getElementById('refresh-auth-status-container').style.display = 'none'
+            } else {
+                window.document.getElementById('connect-true').style.display = 'none'
+                window.document.getElementById('connect-false').style.display = 'block'
+                window.document.getElementById('refresh-auth-status-container').style.display = 'block'
+            }
+        });
+
+        // Send a message to the main process
+        window.authapi.checkSend("to-auth-check", "some data");
+
+        window.authapi.refreshReceive("from-auth-refresh", (data) => {
+            console.log(`data from-auth-refresh: ${data}`)
+            if (data) {
+                window.document.getElementById('connect-false').style.display = 'none'
+                window.document.getElementById('connect-true').style.display = 'block'
+                window.document.getElementById('refresh-auth-status-container').style.display = 'none'
+            } else {
+                window.document.getElementById('connect-true').style.display = 'none'
+                window.document.getElementById('connect-false').style.display = 'block'
+                window.document.getElementById('refresh-auth-status-container').style.display = 'block'
+            }
+        });
+
+    </script>
+</body>
+
+</html>
